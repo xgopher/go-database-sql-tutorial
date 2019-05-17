@@ -11,17 +11,23 @@ libraries.
 
 虽然 `database/sql` 在您习惯使用它之后很简单，但您可能会对它支持的用例的微妙之处感到惊讶。这对Go的核心库来说很常见。
 
-Resource Exhaustion
+Resource Exhaustion 资源枯竭
 ===================
 
 As mentioned throughout this site, if you don't use `database/sql` as intended,
 you can certainly cause trouble for yourself, usually by consuming some
 resources or preventing them from being reused effectively:
 
-* Opening and closing databases can cause exhaustion of resources.
-* Failing to read all rows or use `rows.Close()` reserves connections from the pool.
+正如本网站所述，如果你没有按预期使用 `database/sql` ，你肯定会给自己带来麻烦，通常是消耗一些资源或防止它们被有效地重用：
+
+* Opening and closing databases can cause exhaustion of resources.  
+  打开和关闭数据库可能会导致资源耗尽。
+* Failing to read all rows or use `rows.Close()` reserves connections from the pool.  
+  无法读取所有行或使用 `rows.Close()` 保留池中的连接。
 * Using `Query()` for a statement that doesn't return rows will reserve a connection from the pool.
-* Failing to be aware of how [prepared statements](prepared.html) work can lead to a lot of extra database activity.
+  对不返回行的语句使用 `Query()` 将保留池中的连接。
+* Failing to be aware of how [prepared statements](prepared.html) work can lead to a lot of extra database activity.  
+  如果不了解预处理语句的工作原理，可能会导致大量额外的数据库活动。
 
 Large uint64 Values
 ===================
