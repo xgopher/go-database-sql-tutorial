@@ -64,6 +64,8 @@ that it's best to capture and check for errors in all database operations. If
 Logging the error message or panicing might be the only sensible thing,
 and if that's not sensible, then perhaps you should just ignore the error.
 
+`rows.Close()` 返回的错误是一般规则的唯一例外，它最好捕获并检查所有数据库操作中的错误。如果rows.Close（）返回错误，则不清楚应该怎么做。记录错误消息或panicing可能是唯一明智的事情，如果这不合理，那么也许你应该忽略错误。
+
 Errors From QueryRow()
 ======================
 
@@ -81,14 +83,20 @@ fmt.Println(name)
 What if there was no user with `id = 1`? Then there would be no row in the
 result, and `.Scan()` would not scan a value into `name`. What happens then?
 
+如果没有id = 1的用户怎么办？然后结果中没有行，并且.Scan（）不会将值扫描到名称中。那么会发生什么？
+
 Go defines a special error constant, called `sql.ErrNoRows`, which is returned
 from `QueryRow()` when the result is empty. This needs to be handled as a
 special case in most circumstances. An empty result is often not considered an
 error by application code, and if you don't check whether an error is this
 special constant, you'll cause application-code errors you didn't expect.
 
+Go定义了一个特殊的错误常量，称为sql.ErrNoRows，当结果为空时，它从QueryRow（）返回。在大多数情况下，这需要作为特殊情况处理。应用程序代码通常不会将空结果视为错误，如果不检查错误是否为此特殊常量，则会导致您没有预料到的应用程序代码错误。
+
 Errors from the query are deferred until `Scan()` is called, and then are
 returned from that. The above code is better written like this instead:
+
+查询中的错误将被推迟，直到调用 `Scan()` ，然后从中返回。上面的代码更好地编写如下：
 
 <pre class="prettyprint lang-go">
 var name string
@@ -109,6 +117,8 @@ to use this special-case in order to let the caller distinguish whether
 `QueryRow()` in fact found a row; without it, `Scan()` wouldn't do anything and
 you might not realize that your variable didn't get any value from the database
 after all.
+
+有人可能会问为什么空结果集被认为是错误。空集没有任何错误。原因是QueryRow（）方法需要使用这种特殊情况才能让调用者区分QueryRow（）实际上是否找到了一行;没有它，Scan（）不会做任何事情，你可能没有意识到你的变量毕竟没有从数据库中获得任何值。
 
 You should only run into this error when you're using `QueryRow()`. If you
 encounter this error elsewhere, you're doing something wrong.
