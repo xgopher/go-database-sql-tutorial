@@ -123,10 +123,16 @@ after all.
 You should only run into this error when you're using `QueryRow()`. If you
 encounter this error elsewhere, you're doing something wrong.
 
+您应该只在使用 `QueryRow()` 时遇到此错误。如果你在其他地方遇到这个错误，你做错了什么。
+
 Identifying Specific Database Errors
 ====================================
 
+识别特定的数据库错误
+
 It can be tempting to write code like the following:
+
+编写如下代码很有诱惑力：
 
 <pre class="prettyprint lang-go">
 rows, err := db.Query("SELECT someval FROM sometable")
@@ -140,6 +146,8 @@ if strings.Contains(err.Error(), "Access denied") {
 This is not the best way to do it, though. For example, the string value might
 vary depending on what language the server uses to send error messages.  It's
 much better to compare error numbers to identify what a specific error is.
+
+但这并不是最好的方法。例如，字符串值可能会有所不同，具体取决于服务器用于发送错误消息的语言。比较错误号以识别特定错误是更好的。
 
 The mechanism to do this varies between drivers, however, because this isn't
 part of `database/sql` itself. In the MySQL driver that this tutorial focuses
