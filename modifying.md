@@ -66,22 +66,33 @@ In Go, a transaction is essentially an object that reserves a connection to the
 datastore. It lets you do all of the operations we've seen thus far, but
 guarantees that they'll be executed on the same connection.
 
+在Go中，事务本质上是一个保留与数据存储区连接的对象。它允许您执行我们迄今为止看到的所有操作，但保证它们将在同一连接上执行。
+
 You begin a transaction with a call to `db.Begin()`, and close it with a
 `Commit()` or `Rollback()` method on the resulting `Tx` variable. Under the
 covers, the `Tx` gets a connection from the pool, and reserves it for use only
 with that transaction. The methods on the `Tx` map one-for-one to methods you
 can call on the database itself, such as `Query()` and so forth.
 
+您通过调用 `db.Begin()` 开始事务，并在生成的Tx变量上使用 `Commit()` 或 `Rollback()` 方法将其关闭。在封面下，`Tx` 从池中获取连接，并保留它仅用于该事务。 Tx上的方法可以一对一地映射到可以在数据库本身上调用的方法，例如 `Query()` 等。
+
 Prepared statements that are created in a transaction are bound exclusively to
 that transaction. See [prepared statements](prepared.html) for more.
+
+在事务中创建的预准备语句专门绑定到该事务。有关更多信息，请参
 
 You should not mingle the use of transaction-related functions such as `Begin()`
 and `Commit()` with SQL statements such as `BEGIN` and `COMMIT` in your SQL
 code. Bad things might result:
 
-* The `Tx` objects could remain open, reserving a connection from the pool and not returning it.
-* The state of the database could get out of sync with the state of the Go variables representing it.
-* You could believe you're executing queries on a single connection, inside of a transaction, when in reality Go has created several connections for you invisibly and some statements aren't part of the transaction.
+您不应该在SQL代码中使用与事务相关的函数（如Begin（）和Commit（））与SQL语句（如BEGIN和COMMIT）混合使用。可能导致不好的事情：
+
+* The `Tx` objects could remain open, reserving a connection from the pool and not returning it.  
+  Tx对象可以保持打开状态，保留池中的连接而不返回它。
+* The state of the database could get out of sync with the state of the Go variables representing it.  
+  数据库的状态可能与表示它的Go变量的状态不同步。
+* You could believe you're executing queries on a single connection, inside of a transaction, when in reality Go has created several connections for you invisibly and some statements aren't part of the transaction.  
+  你可以相信你在一个事务中的单个连接上执行查询，而实际上Go已经为你创建了几个连接而且一些语句不是事务的一部分。
 
 While you are working inside a transaction you should be careful not to make
 calls to the `db` variable. Make all of your calls to the `Tx` variable that you

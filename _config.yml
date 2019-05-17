@@ -5,3 +5,5 @@ lsi: false
 highlighter: rouge
 timezone: UTC
 markdown: kramdown
+
+baseurl: https://hopher.github.io/go-database-sql-tutorial/
