@@ -100,15 +100,24 @@ created with `db.Begin()`. `db` is not in a transaction, only the `Tx` object is
 If you make further calls to `db.Exec()` or similar, those will happen outside
 the scope of your transaction, on other connections.
 
+当您在事务内部工作时，应该注意不要调用db变量。对使用db.Begin（）创建的Tx变量进行所有调用。 db不在事务中，只有Tx对象。如果进一步调用db.Exec（）或类似函数，那么这些调用将发生在事务范围之外，在其他连接上。
+
 If you need to work with multiple statements that modify connection state, you
 need a `Tx` even if you don't want a transaction per se. For example:
 
-* Creating temporary tables, which are only visible to one connection.
-* Setting variables, such as MySQL's `SET @var := somevalue` syntax.
-* Changing connection options, such as character sets or timeouts.
+如果您需要使用多个修改连接状态的语句，即使您不想要事务本身，也需要Tx。例如：
+
+* Creating temporary tables, which are only visible to one connection.  
+  创建仅对一个连接可见的临时表。
+* Setting variables, such as MySQL's `SET @var := somevalue` syntax.  
+  设置变量，例如MySQL的SET @var：= somevalue语法。
+* Changing connection options, such as character sets or timeouts.  
+  更改连接选项，例如字符集或超时。
 
 If you need to do any of these things, you need to bind your activity to a
 single connection, and the only way to do that in Go is to use a `Tx`.
+
+如果您需要执行上述任何操作，则需要将活动绑定到单个连接，而在Go中执行此操作的唯一方法是使用Tx。
 
 **Previous: [Retrieving Result Sets](retrieving.html)**
 **Next: [Using Prepared Statements](prepared.html)**
