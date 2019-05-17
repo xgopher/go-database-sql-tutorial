@@ -35,6 +35,8 @@ Large uint64 Values
 Here's a surprising error. You can't pass big unsigned integers as parameters to
 statements if their high bit is set:
 
+这是一个令人惊讶的错误。如果设置了高位，则无法将大的无符号整数作为参数传递给语句：
+
 <pre class="prettyprint lang-go">
 _, err := db.Exec("INSERT INTO users(id) VALUES", math.MaxUint64) // Error
 </pre>
