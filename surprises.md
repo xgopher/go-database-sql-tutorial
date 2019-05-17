@@ -3,9 +3,13 @@ layout: article
 title: Surprises, Antipatterns and Limitations
 ---
 
+惊喜，反模式和限制
+
 Although `database/sql` is simple once you're accustomed to it, you might be
 surprised by the subtlety of use cases it supports. This is common to Go's core
 libraries.
+
+虽然 `database/sql` 在您习惯使用它之后很简单，但您可能会对它支持的用例的微妙之处感到惊讶。这对Go的核心库来说很常见。
 
 Resource Exhaustion
 ===================
