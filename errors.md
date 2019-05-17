@@ -153,6 +153,8 @@ The mechanism to do this varies between drivers, however, because this isn't
 part of `database/sql` itself. In the MySQL driver that this tutorial focuses
 on, you could write the following code:
 
+但是，执行此操作的机制因驱动程序而异，因为这不是 `database/sql` 本身的一部分。在本教程重点介绍的MySQL驱动程序中，您可以编写以下代码：
+
 <pre class="prettyprint lang-go">
 if driverErr, ok := err.(*mysql.MySQLError); ok { // Now the error number is accessible directly
 	if driverErr.Number == 1045 {
@@ -165,6 +167,8 @@ Again, the `MySQLError` type here is provided by this specific driver, and the
 `.Number` field may differ between drivers. The value of the number, however,
 is taken from MySQL's error message, and is therefore database specific, not
 driver specific.
+
+同样，此处的MySQLError类型由此特定驱动程序提供，并且.Number字段可能因驱动程序而异。但是，数字的值取自MySQL的错误消息，因此是特定于数据库的，而不是特定于驱动程序的。
 
 This code is still ugly. Comparing to 1045, a magic number, is a code smell.
 Some drivers (though not the MySQL one, for reasons that are off-topic here)
@@ -187,6 +191,8 @@ Handling Connection Errors
 
 What if your connection to the database is dropped, killed, or has an error?
 
+如果您的数据库连接被丢弃，被杀或有错误怎么办？
+
 You don't need to implement any logic to retry failed statements when this
 happens. As part of the [connection pooling](connection-pool.html) in
 `database/sql`, handling failed connections is built-in. If you execute a query
@@ -194,11 +200,15 @@ or other statement and the underlying connection has a failure, Go will reopen a
 new connection (or just get another from the connection pool) and retry, up to
 10 times.
 
+发生这种情况时，您不需要实现任何逻辑来重试失败的语句。作为 `database/sql` 中连接池的一部分，内置处理失败的连接。如果您执行查询或其他语句并且底层连接出现故障，Go将重新打开一个新连接（或者从连接池中获取另一个连接）并重试最多10次。
+
 There can be some unintended consequences, however. Some types of errors may be
 retried when other error conditions happen. This might also be driver-specific.
 One example that has occurred with the MySQL driver is that using `KILL` to
 cancel an undesired statement (such as a long-running query) results in the
 statement being retried up to 10 times.
+
+但是，可能会产生一些意想不到的后果。当发生其他错误情况时，可能会重试某些类型的错误。这可能也是特定于驱动程序的。 MySQL驱动程序发生的一个例子是使用 `KILL` 取消不需要的语句（例如长时间运行的查询）会导致语句被重试最多10次。
 
 **Previous: [Using Prepared Statements](prepared.html)**
 **Next: [Working with NULLs](nulls.html)**
