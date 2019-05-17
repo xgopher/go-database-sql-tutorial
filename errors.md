@@ -6,8 +6,12 @@ title: Handling Errors
 Almost all operations with `database/sql` types return an error as the last
 value. You should always check these errors, never ignore them.
 
+几乎所有使用 `database/sql` 类型的操作都会返回错误作为最后一个值。您应该始终检查这些错误，不要忽略它们。
+
 There are a few places where error behavior is special-case, or there's
 something additional you might need to know.
+
+在某些地方，错误行为是特殊情况，或者您可能需要了解其他一些内容。
 
 Errors From Iterating Resultsets
 ================================
@@ -30,12 +34,16 @@ need to check whether the loop terminated normally or not. An abnormal
 termination automatically calls `rows.Close()`, although it's harmless to call it
 multiple times.
 
+`rows.Err()` 中的错误可能是 `rows.Next()` 循环中的各种错误的结果。除了正常完成循环之外，循环可能由于某种原因而退出，因此您始终需要检查循环是否正常终止。异常终止会自动调用 `rows.Close()` ，尽管多次调用它是无害的。
+
 Errors From Closing Resultsets
 ==============================
 
 You should always explicitly close a `sql.Rows` if you exit the loop
 prematurely, as previously mentioned. It's auto-closed if the loop exits
 normally or through an error, but you might mistakenly do this:
+
+如前所述，如果过早地退出循环，则应始终显式关闭sql.Rows。如果循环正常退出或通过错误退出，它会自动关闭，但您可能会错误地执行此操作：
 
 <pre class="prettyprint lang-go">
 for rows.Next() {
