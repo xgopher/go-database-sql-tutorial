@@ -31,7 +31,7 @@ behaviors such as automatic retries. For these reasons, the underlying
 association between prepared statements and connections, which exists at the
 driver level, is hidden from your code.
 
-但是，在Go中，连接不会直接暴露给database / sql包的用户。您没有在连接上准备语句。您在DB或Tx上准备它。并且database / sql具有一些便利行为，例如自动重试。由于这些原因，在驱动程序级别存在的预准备语句和连接之间的底层关联对代码是隐藏的。
+但是，在Go中，连接不会直接暴露给 `database/sql` 包的用户。您没有在连接上准备语句。您在 `DB` 或 `Tx` 上准备它。并且 `database/sql` 具有一些便利行为，例如自动重试。由于这些原因，在驱动程序级别存在的预准备语句和连接之间的底层关联对代码是隐藏的。
 
 Here's how it works:
 
