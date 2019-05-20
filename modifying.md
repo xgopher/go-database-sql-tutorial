@@ -8,12 +8,16 @@ distinction might seem artificial if you're used to programming languages that
 use a "statement" object for fetching rows as well as updating data, but in Go,
 there's an important reason for the difference.
 
+现在我们已经准备好了解如何修改数据和处理事务。如果你习惯于编写使用“语句”对象来获取行以及更新数据的语言，那么区别似乎是假的，但在Go中，存在差异的重要原因。
+
 Statements that Modify Data
 ===========================
 
 Use `Exec()`, preferably with a prepared statement, to accomplish an `INSERT`,
 `UPDATE`, `DELETE`, or another statement that doesn't return rows. The following
 example shows how to insert a row and inspect metadata about the operation:
+
+使用Exec（），最好使用预准备语句来完成INSERT，UPDATE，DELETE或其他不返回行的语句。以下示例显示如何插入行并检查有关操作的元数据：
 
 <pre class="prettyprint lang-go">
 stmt, err := db.Prepare("INSERT INTO users(name) VALUES(?)")
@@ -38,9 +42,13 @@ log.Printf("ID = %d, affected = %d\n", lastId, rowCnt)
 Executing the statement produces a `sql.Result` that gives access to statement
 metadata: the last inserted ID and the number of rows affected.
 
+执行该语句会生成一个sql.Result，它提供对语句元数据的访问：最后插入的ID和受影响的行数。
+
 What if you don't care about the result? What if you just want to execute a
 statement and check if there were any errors, but ignore the result? Wouldn't
 the following two statements do the same thing?
+
+如果你不关心结果怎么办？如果您只想执行一个语句并检查是否有错误，但忽略结果怎么办？以下两个陈述不会做同样的事情吗？
 
 <pre class="prettyprint lang-go">
 _, err := db.Exec("DELETE FROM users")  // OK
@@ -58,6 +66,8 @@ tracking the connection in its pool, hoping that you release it at some point,
 so that the connection can be used again.
 This anti-pattern is therefore a good way to run out of resources (too many
 connections, for example).
+
+答案是不。他们不做同样的事情，你不应该像这样使用Query（）。 Query（）将返回一个sql.Rows，它保留数据库连接，直到sql.Rows关闭。由于可能存在未读数据（例如，更多数据行），因此不能使用该连接。在上面的示例中，永远不会再次释放连接。垃圾收集器最终将为您关闭底层的net.Conn，但这可能需要很长时间。此外，database / sql包会一直跟踪其池中的连接，希望您在某个时刻释放它，以便可以再次使用该连接。因此，这种反模式是耗尽资源的好方法（例如，连接太多）。
 
 Working with Transactions
 =========================

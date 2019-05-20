@@ -6,6 +6,8 @@ title: Accessing the Database
 Now that you've loaded the driver package, you're ready to create a database
 object, a `sql.DB`.
 
+现在您已经加载了驱动程序包，您已准备好创建一个数据库对象sql.DB. 要创建sql.DB，请使用sql.Open（）。这将返回* sql.DB：
+
 To create a `sql.DB`, you use `sql.Open()`. This returns a `*sql.DB`:
 
 <pre class="prettyprint lang-go">
@@ -21,10 +23,14 @@ func main() {
 
 In the example shown, we're illustrating several things:
 
-1. The first argument to `sql.Open` is the driver name. This is the string that the driver used to register itself with `database/sql`, and is conventionally the same as the package name to avoid confusion. For example, it's `mysql` for [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql). Some drivers do not follow the convention and use the database name, e.g. `sqlite3` for [github.com/mattn/go-sqlite3](https://github.com/mattn/go-sqlite3) and `postgres` for [github.com/lib/pq](https://github.com/lib/pq).
-2. The second argument is a driver-specific syntax that tells the driver how to access the underlying datastore. In this example, we're connecting to the "hello" database inside a local MySQL server instance.
-3. You should (almost) always check and handle errors returned from all `database/sql` operations.  There are a few special cases that we'll discuss later where it doesn't make sense to do this.
-4. It is idiomatic to `defer db.Close()` if the `sql.DB` should not have a lifetime beyond the scope of the function.
+1. The first argument to `sql.Open` is the driver name. This is the string that the driver used to register itself with `database/sql`, and is conventionally the same as the package name to avoid confusion. For example, it's `mysql` for [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql). Some drivers do not follow the convention and use the database name, e.g. `sqlite3` for [github.com/mattn/go-sqlite3](https://github.com/mattn/go-sqlite3) and `postgres` for [github.com/lib/pq](https://github.com/lib/pq).  
+   sql.Open的第一个参数是驱动程序名称。这是驱动程序用于向database / sql注册自身的字符串，并且通常与包名称相同以避免混淆。例如，它是github.com/go-sql-driver/mysql的mysql。某些驱动程序不遵循约定并使用数据库名称，例如sqlite3用于github.com/mattn/go-sqlite3和postgres用于github.com/lib/pq。
+2. The second argument is a driver-specific syntax that tells the driver how to access the underlying datastore. In this example, we're connecting to the "hello" database inside a local MySQL server instance.  
+   第二个参数是特定于驱动程序的语法，它告诉驱动程序如何访问基础数据存储区。在此示例中，我们将连接到本地MySQL服务器实例中的“hello”数据库。
+3. You should (almost) always check and handle errors returned from all `database/sql` operations.  There are a few special cases that we'll discuss later where it doesn't make sense to do this.  
+   您应该（几乎）始终检查并处理从所有数据库/ SQL操作返回的错误。我们将在稍后讨论一些特殊情况，这样做是没有意义的。
+4. It is idiomatic to `defer db.Close()` if the `sql.DB` should not have a lifetime beyond the scope of the function.  
+   如果sql.DB的生命周期不应超出函数范围，则推迟db.Close（）是惯用的。
 
 Perhaps counter-intuitively, `sql.Open()` **does not establish any connections
 to the database**, nor does it validate driver connection parameters. Instead,
@@ -34,6 +40,8 @@ needed for the first time. If you want to check right away that the database is
 available and accessible (for example, check that you can establish a network
 connection and log in), use `db.Ping()` to do that, and remember to check for
 errors:
+
+也许与直觉相反，sql.Open（）不会与数据库建立任何连接，也不会验证驱动程序连接参数。相反，它只是准备数据库抽象以供以后使用。当第一次需要时，将懒洋洋地建立与基础数据存储区的第一个实际连接。如果要立即检查数据库是否可用且可访问（例如，检查是否可以建立网络连接并登录），请使用db.Ping（）执行此操作，并记住检查错误：
 
 <pre class="prettyprint lang-go">
 err = db.Ping()
@@ -51,11 +59,15 @@ globally, but keep it open. And don't `Open()` and `Close()` from a short-lived
 function. Instead, pass the `sql.DB` into that short-lived function as an
 argument.
 
+尽管在完成数据库时Close（）数据库是惯用的，但sql.DB对象的设计是长期存在的。不经常打开（）和关闭（）数据库。而是为您需要访问的每个不同数据存储创建一个sql.DB对象，并保留它直到程序完成访问该数据存储。根据需要传递它，或者以某种方式在全球范围内提供它，但保持打开状态。并且不要从短期函数中打开（）和关闭（）。相反，将sql.DB作为参数传递给该短期函数。
+
 If you don't treat the `sql.DB` as a long-lived object, you could experience
 problems such as poor reuse and sharing of connections, running out of available
 network resources, or sporadic failures due to a lot of TCP connections
 remaining in `TIME_WAIT` status. Such problems are signs that you're not using
 `database/sql` as it was designed.
+
+如果不将sql.DB视为长期存在的对象，则可能会遇到诸如重用和连接共享不良，可用网络资源不足或偶发故障等问题，因为TIME_WAIT中存在大量TCP连接状态。这些问题表明你没有像设计那样使用数据库/ sql。
 
 Now it's time to use your `sql.DB` object.
 
