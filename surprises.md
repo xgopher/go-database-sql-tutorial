@@ -45,6 +45,8 @@ This will throw an error. Be careful if you use `uint64` values, as they may
 start out small and work without error, but increment over time and start
 throwing errors.
 
+这会引发错误。如果使用uint64值，请小心，因为它们可能从小开始并且没有错误地工作，但随着时间的推移而增加并开始抛出错误。
+
 Connection State Mismatch
 =========================
 
@@ -52,9 +54,11 @@ Some things can change connection state, and that can cause problems for two
 reasons:
 
 1. Some connection state, such as whether you're in a transaction, should be
-	handled through the Go types instead.
+	handled through the Go types instead.  
+   某些连接状态（例如您是否在事务中）应该通过Go类型来处理。	
 2. You might be assuming that your queries run on a single connection when they
-	don't.
+	don't.  
+   您可能假设您的查询在单个连接上运行时不运行。	
 
 For example, setting the current database with a `USE` statement is a typical
 thing for many people to do. But in Go, it will affect only the connection that
@@ -62,10 +66,14 @@ you run it in. Unless you are in a transaction, other statements that you think
 are executed on that connection may actually run on different connections gotten
 from the pool, so they won't see the effects of such changes.
 
+例如，使用 `USE` 语句设置当前数据库对于许多人来说是典型的事情。但是在Go中，它只会影响你运行它的连接。除非你在一个事务中，你认为在该连接上执行的其他语句实际上可能在从池中获取的不同连接上运行，所以它们不会看到这种变化的影响。
+
 Additionally, after you've changed the connection, it'll return to the pool and
 potentially pollute the state for some other code. This is one of the reasons
 why you should never issue BEGIN or COMMIT statements as SQL commands directly,
 too.
+
+此外，在您更改连接后，它将返回池并可能污染其他代码的状态。这也是您不应该直接将BEGIN或COMMIT语句作为SQL命令发出的原因之一。
 
 Database-Specific Syntax
 ========================
@@ -73,6 +81,8 @@ Database-Specific Syntax
 The `database/sql` API provides an abstraction of a row-oriented database, but
 specific databases and drivers can differ in behavior and/or syntax, such as
 [prepared statement placeholders](prepared.html).
+
+`database/sql` API提供了面向行的数据库的抽象，但特定数据库和驱动程序的行为和/或语法可能不同，例如预准备语句占位符。
 
 Multiple Result Sets
 ====================
@@ -82,8 +92,12 @@ way, and there doesn't seem to be any plan to do that, although there is [a
 feature request](https://github.com/golang/go/issues/5171) for
 supporting bulk operations such as bulk copy.
 
+Go驱动程序不以任何方式支持来自单个查询的多个结果集，并且似乎没有任何计划这样做，尽管存在支持批量操作（如批量复制）的功能请求。
+
 This means, among other things, that a stored procedure that returns multiple
 result sets will not work correctly.
+
+这意味着，除其他外，返回多个结果集的存储过程将无法正常工作。
 
 Invoking Stored Procedures
 ==========================
@@ -91,6 +105,8 @@ Invoking Stored Procedures
 Invoking stored procedures is driver-specific, but in the MySQL driver it can't
 be done at present. It might seem that you'd be able to call a simple
 procedure that returns a single result set, by executing something like this:
+
+调用存储过程是特定于驱动程序的，但在MySQL驱动程序中，它目前无法完成。看起来您可以通过执行以下操作来调用返回单个结果集的简单过程：
 
 <pre class="prettyprint lang-go">
 err := db.QueryRow("CALL mydb.myprocedure").Scan(&amp;result) // Error
@@ -103,11 +119,15 @@ multi-statement mode, even for a single result, and the driver doesn't currently
 do that (though see [this
 issue](https://github.com/go-sql-driver/mysql/issues/66)).
 
+事实上，这是行不通的。您将收到以下错误：错误1312：PROCEDURE mydb.myprocedure无法返回给定上下文中的结果集。这是因为MySQL期望将连接设置为多语句模式，即使对于单个结果也是如此，并且驱动程序当前不会这样做（尽管看到此问题）。
+
 Multiple Statement Support
 ==========================
 
 The `database/sql` doesn't explicitly have multiple statement support, which means
 that the behavior of this is backend dependent:
+
+database / sql没有显式地支持多个语句，这意味着它的行为依赖于后端：
 
 <pre class="prettyprint lang-go">
 _, err := db.Exec("DELETE FROM tbl1; DELETE FROM tbl2") // Error/unpredictable result
@@ -116,6 +136,8 @@ _, err := db.Exec("DELETE FROM tbl1; DELETE FROM tbl2") // Error/unpredictable r
 The server is allowed to interpret this however it wants, which can include
 returning an error, executing only the first statement, or executing both.
 
+允许服务器解释它想要的，包括返回错误，仅执行第一个语句或执行两者。
+
 Similarly, there is no way to batch statements in a transaction. Each statement
 in a transaction must be executed serially, and the resources in the results,
 such as a Row or Rows, must be scanned or closed so the underlying connection is free
@@ -123,6 +145,8 @@ for the next statement to use. This differs from the usual behavior when you're
 not working with a transaction. In that scenario, it is perfectly possible to
 execute a query, loop over the rows, and within the loop make a query to the
 database (which will happen on a new connection):
+
+同样，没有办法在事务中批处理语句。事务中的每个语句必须以串行方式执行，并且必须扫描或关闭结果中的资源（如行或行），以便下一个语句可以使用基础连接。这与您不使用事务时的常规行为不同。在这种情况下，完全可以执行查询，循环遍历行，并在循环内对数据库进行查询（这将在新连接上发生）：
 
 <pre class="prettyprint lang-go">
 rows, err := db.Query("select * from tbl1") // Uses connection 1
@@ -135,6 +159,8 @@ for rows.Next() {
 
 But transactions are bound to
 just one connection, so this isn't possible with a transaction:
+
+但事务只绑定到一个连接，因此事务无法实现：
 
 <pre class="prettyprint lang-go">
 tx, err := db.Begin()
@@ -151,6 +177,8 @@ corrupted connection if you attempt to perform another statement before the
 first has released its resources and cleaned up after itself.  This also means
 that each statement in a transaction results in a separate set of network
 round-trips to the database.
+
+不过，Go不会阻止你尝试。因此，如果您尝试在第一个语句释放其资源并在其自身之后清理之前执行另一个语句，则最终可能会出现连接已损坏的情况。这也意味着事务中的每个语句都会导致一组单独的网络往返数据库。
 
 **Previous: [The Connection Pool](connection-pool.html)**
 **Next: [Related Reading and Resources](references.html)**
