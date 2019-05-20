@@ -38,3 +38,6 @@ docs:
 
   - title: Related Reading and Resources
     url: references.html
+
+  - title: Analyzing Prepared Statement Performance With VividCortex
+    url: vividcortex.html    
