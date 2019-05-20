@@ -1,6 +1,6 @@
 ## database/sql
 
-golang `database/sql` 包，中文翻译
+golang `database/sql` 包，简单中文翻译
 
 ## 运行
 
