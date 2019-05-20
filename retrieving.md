@@ -15,7 +15,7 @@ includes `Query`, it is designed to ask a question of the database, and will
 return a set of rows**, even if it's empty. Statements that don't return rows
 should not use `Query` functions; they should use `Exec()`.
 
-Go的数据库/ sql函数名称很重要。如果函数名称包含Query，则它旨在询问数据库的问题，并返回一组行，即使它是空的。不返回行的语句不应使用Query函数;他们应该使用Exec（）。
+Go的 `database/sql` 函数名称很重要。如果函数名称包含Query，则它旨在询问数据库的问题，并返回一组行，即使它是空的。不返回行的语句不应使用Query函数;他们应该使用Exec（）。
 
 Fetching Data from the Database
 ===============================
@@ -174,6 +174,8 @@ Single-Row Queries
 If a query returns at most one row, you can use a shortcut around some of the
 lengthy boilerplate code:
 
+如果查询最多返回一行，则可以使用一些冗长的样板代码的快捷方式：
+
 <pre class="prettyprint lang-go">
 var name string
 err = db.QueryRow("select name from users where id = ?", 1).Scan(&amp;name)
@@ -185,6 +187,8 @@ fmt.Println(name)
 
 Errors from the query are deferred until `Scan()` is called, and then are
 returned from that. You can also call `QueryRow()` on a prepared statement:
+
+查询中的错误将被推迟，直到调用 `Scan()` ，然后从中返回。您还可以在预准备语句上调用 `QueryRow()` ：
 
 <pre class="prettyprint lang-go">
 stmt, err := db.Prepare("select name from users where id = ?")
