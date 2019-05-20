@@ -2,9 +2,9 @@ version: '3'
 services:
   jekyll:
       image: jekyll/jekyll:pages
-      container_name: go-database-sql-tutorial
+      container_name: xgopher-go-database-sql-tutorial
       command: jekyll serve --watch
       ports:
-          - 3999:4000
+          - 3998:4000
       volumes:
-          - ~/app/github.com/hopher/go-database-sql-tutorial:/srv/jekyll/
+          - ~/app/github.com/xgopher/go-database-sql-tutorial:/srv/jekyll/
