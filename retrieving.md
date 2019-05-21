@@ -164,7 +164,7 @@ statement. That's three round-trips to the database. If you're not careful, you
 can triple the number of database interactions your application makes! Some
 drivers can avoid this in specific cases,
 
-在引擎盖下，db.Query（）实际上准备，执行和关闭准备好的语句。这是数据库的三次往返。如果您不小心，您可以将应用程序的数据库交互次数增加三倍！某些驱动程序可以在特定情况下避免这种情况，但并非所有驱有关更多信息，请参
+在底层，`db.Query()` 实际上准备，执行和关闭准备好的语句。这是数据库的三次往返。如果您不小心，您可以将应用程序的数据库交互次数增加三倍！某些驱动程序可以在特定情况下避免这种情况，但并非所有驱有关更多信息，请参
 
 but not all drivers do. See [prepared statements](prepared.html) for more.
 
